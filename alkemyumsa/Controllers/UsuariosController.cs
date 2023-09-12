@@ -1,18 +1,28 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+﻿using alkemyumsa.Entities;
+using alkemyumsa.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace alkemyumsa.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] //  Todos los endpoint requieren autenticación el JWT.
     public class UsuariosController : ControllerBase
     {
-        // GET: api/<UsuariosController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IUnitOfWork _unitOfWork;
+        public UsuariosController(IUnitOfWork unitOfWork) 
         {
-            return new string[] { "value1", "value2" };
+            _unitOfWork = unitOfWork;
+
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Usuarios>>> GetAll() 
+        {
+            var users = await _unitOfWork.UserRepository.GetAll();
+            return users;
         }
 
         // GET api/<UsuariosController>/5
