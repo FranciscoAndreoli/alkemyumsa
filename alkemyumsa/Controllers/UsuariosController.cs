@@ -2,6 +2,9 @@
 using alkemyumsa.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using alkemyumsa.DTOs;
+using alkemyumsa.Helpers;
+using Microsoft.OpenApi.Validations;
 
 namespace alkemyumsa.Controllers
 {
@@ -17,37 +20,76 @@ namespace alkemyumsa.Controllers
 
         }
 
-
+        // Obtener todos los usuarios
+        // GET: api/usuarios
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuarios>>> GetAll() 
         {
             var users = await _unitOfWork.UserRepository.GetAll();
-            return users;
+            var userDtos = users.Select(user => UserMapper.MapToDto(user)).ToList();
+            return Ok(userDtos);
         }
 
-        // GET api/<UsuariosController>/5
+        // Obtener un usuario por ID
+        // GET: api/usuarios/{id}
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get([FromRoute]int id)
         {
-            return "value";
+            var user = await _unitOfWork.UserRepository.Get(id);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found or deleted." });
+            }
+
+            var userDto = UserMapper.MapToDto(user);
+            return Ok(userDto);
         }
 
-        // POST api/<UsuariosController>
+        // Registrar un nuevo usuario
+        // POST: api/usuarios
         [HttpPost]
-        public void Post([FromBody] string value)
+        [Route("Register")]
+        public async Task<IActionResult> Register(RegisterDto dto)
         {
+            if (dto == null || !ModelState.IsValid)
+            {
+                return BadRequest("Invalid data.");
+            }
+
+            var user = new Usuarios(dto);
+            await _unitOfWork.UserRepository.Insert(user);
+            await _unitOfWork.Complete(); // ejecuta la query, registra los cambios. Los guarda.
+
+            return Ok(new { message = "User registered successfully." }); ;
         }
 
-        // PUT api/<UsuariosController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // Actualizar un usuario
+        // PUT: api/usuarios/{id}
+        [HttpPut ("{id}")]
+        public async Task<IActionResult> Update( [FromRoute] int id, RegisterDto dto)
         {
+            if (dto == null || !ModelState.IsValid)
+            {
+                return BadRequest("Invalid data.");
+            }
+
+            await _unitOfWork.UserRepository.Update(new Usuarios(dto, id));
+
+            await _unitOfWork.Complete();
+
+            return Ok(new { message = "User updated successfully." });
         }
 
-        // DELETE api/<UsuariosController>/5
+        // Eliminar un usuario
+        // DELETE: api/usuarios/{id}
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
+            await _unitOfWork.UserRepository.Delete(id);
+
+            await _unitOfWork.Complete();
+
+            return Ok(new { message = "User deleted successfully." });
         }
     }
 }
