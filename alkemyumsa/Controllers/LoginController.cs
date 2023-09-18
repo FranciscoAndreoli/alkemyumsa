@@ -36,7 +36,7 @@ namespace alkemyumsa.Controllers
         {
             try
             {
-                var userCredentials = await _unitOfWork.UserRepository.authenticateCredentials(loginDto);
+                var userCredentials = await _unitOfWork.UserRepository.AuthenticateCredentials(loginDto);
                 if (userCredentials == null) { return Unauthorized("Credencial incorrecta!"); } 
 
                 var token = _tokenJwtHelper.GenerateToken(userCredentials);
