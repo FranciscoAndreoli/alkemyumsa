@@ -12,8 +12,9 @@ namespace alkemyumsa.Helpers
                 Nombre = user.Nombre,
                 Apellido = user.Apellido,
                 Email = user.Email,
-                Contrasena = user.Contrasena
+                Contrasena = user.Contrasena,
+                Rol = user.Rol
             };
-        } 
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata.Ecma335;
 using alkemyumsa.DTOs;
+using alkemyumsa.Helpers;
 
 namespace alkemyumsa.Entities
 {
@@ -12,7 +13,8 @@ namespace alkemyumsa.Entities
             Nombre = dto.Nombre;
             Apellido = dto.Apellido;
             Email = dto.Email;  
-            Contrasena = dto.Contrasena; 
+            Contrasena = PasswordHashHelper.HashPassword(dto.Contrasena);
+            Rol = dto.Rol;
         }
 
         public Usuarios(RegisterDto dto, int id ) // constructor de sobrecarga
@@ -21,7 +23,8 @@ namespace alkemyumsa.Entities
             Nombre = dto.Nombre;
             Apellido = dto.Apellido;
             Email = dto.Email;
-            Contrasena = dto.Contrasena;
+            Contrasena = PasswordHashHelper.HashPassword(dto.Contrasena);
+            Rol = dto.Rol;
         }
 
         public Usuarios() { }
@@ -41,17 +44,17 @@ namespace alkemyumsa.Entities
         [Required]
         [Column("email_usuario", TypeName = "VARCHAR(80)")]
         public string Email { get; set; }
-        //public int Dni { get; set; }
-        //public int Tipo { get; set;}
 
         [Required]
-        [Column("contrasena_usuario", TypeName = "VARCHAR(50)")]
+        [Column("contrasena_usuario", TypeName = "VARCHAR(250)")]
         public string Contrasena { get; set; }
+
+        [Required]
+        [Column("rol")]
+        public Roles Rol { get; set; }
 
         [Column("deleted_at", TypeName = "DATETIME")]
         public DateTime? DeletedAt { get; set; }
-        /*[Required]
-        [Column("roles", TypeName = "INT")]
-        public int Roles { get; set; }*/
+
     }
 }
