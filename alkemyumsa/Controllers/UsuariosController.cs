@@ -11,6 +11,7 @@ namespace alkemyumsa.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize] //  Todos los endpoint requieren autenticación el JWT.
+    //[AllowAnonymous]
     public class UsuariosController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -38,7 +39,7 @@ namespace alkemyumsa.Controllers
             var user = await _unitOfWork.UserRepository.Get(id);
             if (user == null)
             {
-                return NotFound(new { message = "User not found or deleted." });
+                return NotFound(new { message = "Usuario no encontrado o borrado." });
             }
 
             var userDto = UserMapper.MapToDto(user);
@@ -47,49 +48,48 @@ namespace alkemyumsa.Controllers
 
         // Registrar un nuevo usuario
         // POST: api/usuarios
+        [Authorize(Policy = "Administrador")]
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-            if (dto == null || !ModelState.IsValid)
-            {
-                return BadRequest("Invalid data.");
-            }
-
+           
             var user = new Usuarios(dto);
             await _unitOfWork.UserRepository.Insert(user);
             await _unitOfWork.Complete(); // ejecuta la query, registra los cambios. Los guarda.
 
-            return Ok(new { message = "User registered successfully." }); ;
+            return Ok(new { message = "Usuario registrado exitosamente." }); ;
         }
 
         // Actualizar un usuario
         // PUT: api/usuarios/{id}
+        [Authorize(Policy = "Administrador")]
         [HttpPut ("{id}")]
         public async Task<IActionResult> Update( [FromRoute] int id, RegisterDto dto)
         {
-            if (dto == null || !ModelState.IsValid)
-            {
-                return BadRequest("Invalid data.");
-            }
+            
 
-            await _unitOfWork.UserRepository.Update(new Usuarios(dto, id));
+            var result = await _unitOfWork.UserRepository.Update(new Usuarios(dto, id));
+            if (result == false) { return NotFound(new { message = "Usuario no encontrado o borrado." }); }
+
 
             await _unitOfWork.Complete();
 
-            return Ok(new { message = "User updated successfully." });
+            return Ok(new { message = "Usuario actualizado exitosamente." });
         }
 
         // Eliminar un usuario
         // DELETE: api/usuarios/{id}
+        [Authorize(Policy = "Administrador")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            await _unitOfWork.UserRepository.Delete(id);
+            var result = await _unitOfWork.UserRepository.Delete(id);
+            if (result == false) { return NotFound(new { message = "Usuario no encontrado." }); }
 
             await _unitOfWork.Complete();
 
-            return Ok(new { message = "User deleted successfully." });
+            return Ok(new { message = "Usuario borrado exitosamente." });
         }
     }
 }
