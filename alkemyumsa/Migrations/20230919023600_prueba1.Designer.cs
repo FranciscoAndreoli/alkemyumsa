@@ -12,8 +12,8 @@ using alkemyumsa.DataAccess;
 namespace alkemyumsa.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230918005345_AddDeletedAtColumn")]
-    partial class AddDeletedAtColumn
+    [Migration("20230919023600_prueba1")]
+    partial class prueba1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,7 +40,7 @@ namespace alkemyumsa.Migrations
 
                     b.Property<string>("Contrasena")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(50)")
+                        .HasColumnType("VARCHAR(250)")
                         .HasColumnName("contrasena_usuario");
 
                     b.Property<DateTime?>("DeletedAt")
@@ -57,6 +57,10 @@ namespace alkemyumsa.Migrations
                         .HasColumnType("VARCHAR(80)")
                         .HasColumnName("nombre_usuario");
 
+                    b.Property<int>("Rol")
+                        .HasColumnType("int")
+                        .HasColumnName("rol");
+
                     b.HasKey("Id");
 
                     b.ToTable("Usuario");
@@ -66,9 +70,10 @@ namespace alkemyumsa.Migrations
                         {
                             Id = 1,
                             Apellido = "Andreoli",
-                            Contrasena = "123456",
+                            Contrasena = "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92",
                             Email = "franandreoli7@gmail.com",
-                            Nombre = "Francisco"
+                            Nombre = "Francisco",
+                            Rol = 1
                         });
                 });
 #pragma warning restore 612, 618

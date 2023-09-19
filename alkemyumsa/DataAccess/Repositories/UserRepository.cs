@@ -1,6 +1,7 @@
 ﻿using alkemyumsa.DataAccess.Repositories.Interfaces;
 using alkemyumsa.DTOs;
 using alkemyumsa.Entities;
+using alkemyumsa.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,7 @@ namespace alkemyumsa.DataAccess.Repositories
 
         public async Task<Usuarios?> AuthenticateCredentials(AuthenticateDto dto)
         {
-            return await _context.Usuario.SingleOrDefaultAsync(x => x.Email == dto.Email && x.Contrasena == dto.Contrasena);
+            return await _context.Usuario.SingleOrDefaultAsync(x => x.Email == dto.Email && x.Contrasena == PasswordHashHelper.HashPassword(dto.Contrasena));
 
         }
         public async override Task<List<Usuarios>> GetAll()
@@ -41,6 +42,7 @@ namespace alkemyumsa.DataAccess.Repositories
             user.Nombre = updateUser.Nombre;
             user.Apellido = updateUser.Apellido;
             user.Email = updateUser.Email;
+            user.Rol = updateUser.Rol;
             user.Contrasena = updateUser.Contrasena;
 
             _context.Usuario.Update(user);
