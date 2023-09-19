@@ -22,6 +22,7 @@ namespace alkemyumsa.Helpers
                 new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]), // sujeto del token, traído de appsetting.json
                 new Claim(ClaimTypes.Email, user.Email), // email del objeto user.
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // identificador unico del usuario, usamos el id del objeto user.
+                new Claim(ClaimTypes.Role, user.Rol.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])); // Se crea una clave simétrica a partir del key presente en appsetting.json
