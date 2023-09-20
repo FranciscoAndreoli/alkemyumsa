@@ -13,7 +13,7 @@ namespace alkemyumsa.Entities
             Nombre = dto.Nombre;
             Apellido = dto.Apellido;
             Email = dto.Email;  
-            Contrasena = PasswordHashHelper.HashPassword(dto.Contrasena);
+            Contrasena = PasswordHashHelper.EncryptPassword(dto.Contrasena, dto.Email);
             Rol = dto.Rol;
         }
 
@@ -23,7 +23,7 @@ namespace alkemyumsa.Entities
             Nombre = dto.Nombre;
             Apellido = dto.Apellido;
             Email = dto.Email;
-            Contrasena = PasswordHashHelper.HashPassword(dto.Contrasena);
+            Contrasena = PasswordHashHelper.EncryptPassword(dto.Contrasena, dto.Email);
             Rol = dto.Rol;
         }
 

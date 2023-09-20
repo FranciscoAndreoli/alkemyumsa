@@ -47,4 +47,9 @@ public class Repository<T> : IRepository<T> where T : class
     {
         throw new NotImplementedException();
     }
+
+    public Task<bool> CheckUser(int id, string email)
+    {
+        throw new NotImplementedException();
+    }
 }

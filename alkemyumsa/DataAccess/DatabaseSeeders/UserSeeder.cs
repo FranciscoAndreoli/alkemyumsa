@@ -14,7 +14,7 @@ namespace alkemyumsa.DataAccess.DatabaseSeeders
                     Nombre = "Francisco",
                     Apellido = "Andreoli",
                     Email = "franandreoli7@gmail.com",
-                    Contrasena  = PasswordHashHelper.HashPassword("123456"),
+                    Contrasena  = PasswordHashHelper.EncryptPassword("123456", "franandreoli7@gmail.com"),
                     Rol = Roles.Administrador
                     }
                 

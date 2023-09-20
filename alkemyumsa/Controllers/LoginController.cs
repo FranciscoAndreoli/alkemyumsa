@@ -8,17 +8,25 @@ using System.Linq.Expressions;
 using alkemyumsa.Helpers;
 using alkemyumsa.Services;
 using Microsoft.AspNetCore.Authorization;
+using alkemyumsa.Infraestructure;
 
 namespace alkemyumsa.Controllers
 {
 
+    /// <summary>
+    /// Controller responsible for handling user login operations.
+    /// </summary>
     [ApiController]
     [Route("api/[Controller]")]
-    [Authorize]
-    public class LoginController : ControllerBase //LoginController es el encargado de devolver el token, también será utilizado en el front. y en postman.
+    public class LoginController : ControllerBase 
     {
         private TokenJwtHelper _tokenJwtHelper;
         private readonly IUnitOfWork _unitOfWork;
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginController"/> class.
+        /// </summary>
+        /// <param name="unitOfWork">Provides mechanisms to interact with the data source, such as database operations.</param>
+        /// <param name="configuration">Represents a set of key/value application configuration properties.</param>
         public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
@@ -26,18 +34,21 @@ namespace alkemyumsa.Controllers
         }
 
         /// <summary>
-        /// Borra usuario.
+        /// Authenticates the user based on the provided credentials.
         /// </summary>
-        /// <param name="id">integer</param>
-        /// <returns>Retorna not found si no se encontró usuario. Si se encontró, no retorna contenido</returns>
+        /// <param name="loginDto">The data transfer object containing user credentials for authentication.</param>
+        /// <returns>
+        /// Returns a user with a generated token upon successful authentication. 
+        /// If authentication fails, it returns a 401 error response with an appropriate error message.
+        /// </returns>
         [HttpPost]
-        [AllowAnonymous] // permite ingresar al endpoint, ignorando el '[Authorize]' de arriba.
+        //[AllowAnonymous] 
         public async Task<IActionResult> Login([FromBody]AuthenticateDto loginDto)
         {
             try
             {
                 var userCredentials = await _unitOfWork.UserRepository.AuthenticateCredentials(loginDto);
-                if (userCredentials == null) { return Unauthorized("Credencial incorrecta!"); } 
+                if (userCredentials == null) { return ResponseFactory.CreateErrorResponse(401, "Wrong credentials!"); } 
 
                 var token = _tokenJwtHelper.GenerateToken(userCredentials);
                 var user = new UsuarioLoginDto()
@@ -48,11 +59,11 @@ namespace alkemyumsa.Controllers
                     Token = token
 
                 };
-                return Ok(user);
+                return ResponseFactory.CreateSuccessResponse(200, user);
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error del sistema: {ex.Message}");
+                return ResponseFactory.CreateErrorResponse(401, $"System error: {ex.Message}");
             }
         }
     }

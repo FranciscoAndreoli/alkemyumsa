@@ -4,6 +4,8 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>C:\Users\franc\source\repos\alkemyumsa\alkemyumsa\bin\Debug\net6.0\alkemyumsa.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infraestructure\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

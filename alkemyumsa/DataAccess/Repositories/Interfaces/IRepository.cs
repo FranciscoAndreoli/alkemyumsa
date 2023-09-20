@@ -8,5 +8,7 @@
         public Task<bool> Update(T entity);
 
         public Task<bool> Delete(int id);
+
+        public Task<bool> CheckUser(int id, string email);
     }
 }
