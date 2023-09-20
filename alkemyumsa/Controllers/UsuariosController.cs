@@ -70,7 +70,7 @@ namespace alkemyumsa.Controllers
         [Route("Register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-
+           
             if (await _unitOfWork.UserRepository.CheckUser(dto.Email))
             {
                 return ResponseFactory.CreateErrorResponse(409, $"This user already exists: {dto.Email}");

@@ -41,7 +41,7 @@ namespace alkemyumsa.DataAccess.Repositories
             var users = await _context.Usuario.ToListAsync();
             return users.Where(x => x.DeletedAt == null).ToList();
         }
-
+        
         /// <summary>
         /// Retrieves a user by their ID.
         /// </summary>
