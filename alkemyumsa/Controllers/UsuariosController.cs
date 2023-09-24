@@ -38,7 +38,15 @@ namespace alkemyumsa.Controllers
         public async Task<IActionResult> GetAll() 
         {
             var users = await _unitOfWork.UserRepository.GetAll();
+            int pageToShow = 1;
+
+            if(Request.Query.ContainsKey("page")) { int.TryParse(Request.Query["page"], out pageToShow);  }
+
+            var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
             var userDtos = users.Select(user => UserMapper.MapToDto(user)).ToList();
+            var paginateUsers = PaginateHelper.Paginate(userDtos, pageToShow, url);
+
+            
             return ResponseFactory.CreateSuccessResponse(200, userDtos);
         }
 
@@ -71,7 +79,7 @@ namespace alkemyumsa.Controllers
         public async Task<IActionResult> Register(RegisterDto dto)
         {
            
-            if (await _unitOfWork.UserRepository.CheckUser(dto.Email))
+            if (await _unitOfWork.UserRepository.Check(dto.Email))
             {
                 return ResponseFactory.CreateErrorResponse(409, $"This user already exists: {dto.Email}");
             }

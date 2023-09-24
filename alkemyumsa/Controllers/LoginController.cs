@@ -54,7 +54,7 @@ namespace alkemyumsa.Controllers
                 var user = new UsuarioLoginDto()
                 {
                     Nombre = userCredentials.Nombre,
-                    Apellido = userCredentials.Apellido,
+                    Dni = userCredentials.Dni,
                     Email = userCredentials.Email,
                     Token = token
 

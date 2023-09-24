@@ -7,11 +7,13 @@ namespace alkemyumsa.Services
     {
         private readonly ApplicationDbContext _context;
         public UserRepository UserRepository { get; private set; }
+        public ProjectRepository ProjectRepository { get; private set; }
 
         public UnitOfWorkService(ApplicationDbContext context)
         {
             _context = context;
             UserRepository = new UserRepository(_context);
+            ProjectRepository = new ProjectRepository(_context);
         }
         public async Task<int> Complete()
         {
