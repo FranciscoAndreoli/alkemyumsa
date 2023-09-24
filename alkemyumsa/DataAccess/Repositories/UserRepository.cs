@@ -63,10 +63,10 @@ namespace alkemyumsa.DataAccess.Repositories
         {
             var user = await _context.Usuario.SingleOrDefaultAsync(x => x.Id == updateUser.Id); //Trae el usuario que coincida con el ID.
 
-            if (user == null) { return false; }
+            if (user == null || user.DeletedAt != null) { return false; }
 
             user.Nombre = updateUser.Nombre;
-            user.Apellido = updateUser.Apellido;
+            user.Dni = updateUser.Dni;
             user.Email = updateUser.Email;
             user.Rol = updateUser.Rol;
             user.Contrasena = updateUser.Contrasena;
@@ -84,7 +84,7 @@ namespace alkemyumsa.DataAccess.Repositories
         public async override Task<bool> Delete(int id)
         {
             var user =  await _context.Usuario.Where(x => x.Id == id).SingleOrDefaultAsync();
-            if (user != null) {
+            if (user != null && user.DeletedAt == null) {
                 //_context.Usuario.Remove(user); // borrado físico
                 user.DeletedAt = DateTime.UtcNow; // borrado lógico
 
@@ -98,7 +98,7 @@ namespace alkemyumsa.DataAccess.Repositories
         /// </summary>
         /// <param name="email">The email address to check.</param>
         /// <returns>True if a user with the email exists; otherwise, false.</returns>
-        public async Task<bool> CheckUser(string email)
+        public async Task<bool> Check(string email)
         {
             return await _context.Usuario.AnyAsync(x => x.Email == email);
         }

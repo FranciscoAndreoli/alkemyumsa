@@ -6,6 +6,8 @@ namespace alkemyumsa.Services
     public interface IUnitOfWork
     {
         public UserRepository UserRepository { get; }
+
+        public ProjectRepository ProjectRepository { get; }
         Task<int> Complete();
     }
 }

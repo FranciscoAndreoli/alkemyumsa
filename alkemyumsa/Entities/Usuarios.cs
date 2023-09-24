@@ -11,7 +11,7 @@ namespace alkemyumsa.Entities
         public Usuarios(RegisterDto dto) { 
         
             Nombre = dto.Nombre;
-            Apellido = dto.Apellido;
+            Dni = dto.Dni;
             Email = dto.Email;  
             Contrasena = PasswordHashHelper.EncryptPassword(dto.Contrasena, dto.Email);
             Rol = dto.Rol;
@@ -21,7 +21,7 @@ namespace alkemyumsa.Entities
         {
             Id = id;
             Nombre = dto.Nombre;
-            Apellido = dto.Apellido;
+            Dni = dto.Dni;
             Email = dto.Email;
             Contrasena = PasswordHashHelper.EncryptPassword(dto.Contrasena, dto.Email);
             Rol = dto.Rol;
@@ -38,8 +38,8 @@ namespace alkemyumsa.Entities
         public string Nombre { get; set; }
 
         [Required]
-        [Column("apellido_usuario", TypeName = "VARCHAR(80)")]
-        public string Apellido { get; set; }
+        [Column("dni", TypeName = "INT")]
+        public int Dni { get; set; }
 
         [Required]
         [Column("email_usuario", TypeName = "VARCHAR(80)")]
