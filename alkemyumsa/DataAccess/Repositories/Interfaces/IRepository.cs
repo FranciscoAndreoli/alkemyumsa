@@ -9,6 +9,6 @@
 
         public Task<bool> Delete(int id);
 
-        public Task<bool> CheckUser(int id, string email);
+        public Task<bool> Check(string data);
     }
 }

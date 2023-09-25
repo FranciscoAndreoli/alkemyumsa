@@ -9,6 +9,5 @@ namespace alkemyumsa.DTOs
         public string Email { get; set; }
 
         public Roles Rol { get; set; }
-        public string Contrasena { get; set; }
     }
 }

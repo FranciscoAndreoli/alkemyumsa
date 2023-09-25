@@ -12,7 +12,6 @@ namespace alkemyumsa.Helpers
                 Nombre = user.Nombre,
                 Dni = user.Dni,
                 Email = user.Email,
-                Contrasena = user.Contrasena,
                 Rol = user.Rol
             };
         }

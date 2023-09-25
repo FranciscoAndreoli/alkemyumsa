@@ -6,32 +6,44 @@ using System.Text;
 
 namespace alkemyumsa.Helpers
 {
-    public class TokenJwtHelper // utilizamos esta clase para generar el token.
+    /// <summary>
+    /// Clase auxiliar para la generación de tokens JWT.
+    /// </summary>
+    public class TokenJwtHelper
     {
-        private IConfiguration _configuration; // Nos permite acceder a la configuración de la aplicación, almacenada en appsettings.json
+        private IConfiguration _configuration;
 
+        /// <summary>
+        /// Constructor que inicializa la configuración para la generación del token.
+        /// </summary>
+        /// <param name="configuration">Configuración utilizada para la creación del token JWT.</param>
         public TokenJwtHelper(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// Genera un token JWT basado en la información del usuario proporcionado.
+        /// </summary>
+        /// <param name="user">El usuario para el cual se generará el token.</param>
+        /// <returns>Retorna el token JWT generado como una cadena de texto.</returns>
         public string GenerateToken(Usuarios user)
         {
-            var claims = new[] // afirmaciones del token.
+            var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]), // sujeto del token, traído de appsetting.json
-                new Claim(ClaimTypes.Email, user.Email), // email del objeto user.
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // identificador unico del usuario, usamos el id del objeto user.
+                new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Role, user.Rol.ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])); // Se crea una clave simétrica a partir del key presente en appsetting.json
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256); // se crea la credencial, usamos la key previa y el algoritmo de encriptación
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var securityToken = new JwtSecurityToken( //Se crea el token JWT
-                claims:claims,
+            var securityToken = new JwtSecurityToken(
+                claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(60),
-                signingCredentials:credentials
+                signingCredentials: credentials
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(securityToken);
