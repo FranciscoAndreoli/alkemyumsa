@@ -28,8 +28,12 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>Una lista de los proyectos activos.</returns>
         public async override Task<List<Proyectos>> GetAll()
         {
-            var proyectos = await _context.Proyecto.ToListAsync();
-            return proyectos.Where(x => x.DeletedAt == null).ToList();
+            try
+            {
+                var proyectos = await _context.Proyecto.ToListAsync();
+                return proyectos.Where(x => x.DeletedAt == null).ToList();
+            }
+            catch (Exception) { throw; }      
         }
 
         /// <summary>
@@ -39,10 +43,15 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>El proyecto. Sino, devuelve null.</returns>
         public async override Task<Proyectos?> Get(int id)
         {
-            var proyectos = await _context.Proyecto.SingleOrDefaultAsync(x => x.CodProyecto == id); 
-            if (proyectos == null || proyectos.DeletedAt != null) { return null; }
+            try
+            {
+                var proyectos = await _context.Proyecto.SingleOrDefaultAsync(x => x.CodProyecto == id);
+                if (proyectos == null || proyectos.DeletedAt != null) { return null; }
 
-            return proyectos;
+                return proyectos;
+            }
+            catch (Exception) { throw; }
+               
         }
 
         /// <summary>
@@ -52,10 +61,14 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>El proyecto. Sino, devuelve null.</returns>
         public async Task<List<Proyectos>> GetProjects(string estado)
         {
-            var proyectos = await _context.Proyecto.Where
+            try
+            {
+                var proyectos = await _context.Proyecto.Where
                                                     (x => x.Estado.ToLower() == estado.ToLower() && x.DeletedAt == null)
                                                     .ToListAsync();
-            return proyectos;
+                return proyectos;
+            }
+            catch (Exception) { throw; }
         }
 
 
@@ -66,14 +79,18 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si se actualizó correctamente. Sino, false.</returns>
         public async override Task<bool> Update(Proyectos updateProyecto)
         {
-            var proyecto = await _context.Proyecto.SingleOrDefaultAsync(x => x.CodProyecto == updateProyecto.CodProyecto); 
-            if (proyecto == null || proyecto.DeletedAt != null) { return false; }
-            proyecto.Nombre = updateProyecto.Nombre;
-            proyecto.Direccion = updateProyecto.Direccion;
-            proyecto.Estado = updateProyecto.Estado;
-            _context.Proyecto.Update(proyecto);
+            try
+            {
+                var proyecto = await _context.Proyecto.SingleOrDefaultAsync(x => x.CodProyecto == updateProyecto.CodProyecto);
+                if (proyecto == null || proyecto.DeletedAt != null) { return false; }
+                proyecto.Nombre = updateProyecto.Nombre;
+                proyecto.Direccion = updateProyecto.Direccion;
+                proyecto.Estado = updateProyecto.Estado;
+                _context.Proyecto.Update(proyecto);
 
-            return true;
+                return true;
+            }
+            catch (Exception){throw; }      
         }
 
         /// <summary>
@@ -83,15 +100,20 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si el proyecto fue encontrado. Sino, false.</returns>
         public async override Task<bool> Delete(int id)
         {
-            var proyecto = await _context.Proyecto.Where(x => x.CodProyecto == id).SingleOrDefaultAsync();
-            if (proyecto != null && proyecto.DeletedAt == null)
+            try
             {
-                //_context.Proyecto.Remove(user); // borrado físico
-                proyecto.DeletedAt = DateTime.UtcNow; // borrado lógico
+                var proyecto = await _context.Proyecto.Where(x => x.CodProyecto == id).SingleOrDefaultAsync();
+                if (proyecto != null && proyecto.DeletedAt == null)
+                {
+                    //_context.Proyecto.Remove(user); // borrado físico
+                    proyecto.DeletedAt = DateTime.UtcNow; // borrado lógico
 
-                return true;
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception) { throw; }
+            
         }
 
         /// <summary>
@@ -101,7 +123,11 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si el Proyecto ya existe. Sino, false.</returns>
         public async override Task<bool> Check(string nombreProyecto)
         {
-            return await _context.Proyecto.AnyAsync(x => x.Nombre.ToLower() == nombreProyecto.ToLower());
+            try
+            {
+                return await _context.Proyecto.AnyAsync(x => x.Nombre.ToLower() == nombreProyecto.ToLower());
+            }
+            catch (Exception) { throw; }
         }
     }
 }

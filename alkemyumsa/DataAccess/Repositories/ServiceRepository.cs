@@ -28,8 +28,12 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>Una lista de los Servicios activos.</returns>
         public async override Task<List<Servicios>> GetAll()
         {
-            var servicios = await _context.Servicio.ToListAsync();
-            return servicios.Where(x => x.DeletedAt == null).ToList();
+            try
+            {
+                var servicios = await _context.Servicio.ToListAsync();
+                return servicios.Where(x => x.DeletedAt == null).ToList();
+            }
+            catch (Exception){throw;}
         }
 
         /// <summary>
@@ -39,10 +43,14 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>El servicio. Sino, devuelve null.</returns>
         public async override Task<Servicios?> Get(int id)
         {
-            var servicios = await _context.Servicio.SingleOrDefaultAsync(x => x.CodServicio == id);
-            if (servicios == null || servicios.DeletedAt != null) { return null; }
+            try
+            {
+                var servicios = await _context.Servicio.SingleOrDefaultAsync(x => x.CodServicio == id);
+                if (servicios == null || servicios.DeletedAt != null) { return null; }
 
-            return servicios;
+                return servicios;
+            }
+            catch (Exception){throw;}
         }
         /// <summary>
         /// Actualiza la información de un servicio.
@@ -51,14 +59,18 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si se actualizó correctamente. Sino, false.</returns>
         public async override Task<bool> Update(Servicios updateServicio)
         {
-            var servicio = await _context.Servicio.SingleOrDefaultAsync(x => x.CodServicio == updateServicio.CodServicio);
-            if (servicio == null || servicio.DeletedAt != null) { return false; }
-            servicio.Descr = updateServicio.Descr;
-            servicio.Estado = updateServicio.Estado;
-            servicio.ValorHora = updateServicio.ValorHora;
-            _context.Servicio.Update(servicio);
+            try
+            {
+                var servicio = await _context.Servicio.SingleOrDefaultAsync(x => x.CodServicio == updateServicio.CodServicio);
+                if (servicio == null || servicio.DeletedAt != null) { return false; }
+                servicio.Descr = updateServicio.Descr;
+                servicio.Estado = updateServicio.Estado;
+                servicio.ValorHora = updateServicio.ValorHora;
+                _context.Servicio.Update(servicio);
 
-            return true;
+                return true;
+            }
+            catch (Exception){throw;}
         }
 
         /// <summary>
@@ -68,15 +80,19 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si el servicio fue encontrado. Sino, false.</returns>
         public async override Task<bool> Delete(int id)
         {
-            var servicio = await _context.Servicio.Where(x => x.CodServicio == id).SingleOrDefaultAsync();
-            if (servicio != null && servicio.DeletedAt == null)
+            try
             {
-                //_context.servicio.Remove(user); // borrado físico
-                servicio.DeletedAt = DateTime.UtcNow; // borrado lógico
+                var servicio = await _context.Servicio.Where(x => x.CodServicio == id).SingleOrDefaultAsync();
+                if (servicio != null && servicio.DeletedAt == null)
+                {
+                    //_context.servicio.Remove(user); // borrado físico
+                    servicio.DeletedAt = DateTime.UtcNow; // borrado lógico
 
-                return true;
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch(Exception){ throw; }       
         }
 
         /// <summary>
@@ -86,7 +102,11 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si el servicio ya existe. Sino, false.</returns>
         public async override Task<bool> Check(string descrServicio)
         {
-            return await _context.Servicio.AnyAsync(x => x.Descr.ToLower() == descrServicio.ToLower());
+            try
+            {
+                return await _context.Servicio.AnyAsync(x => x.Descr.ToLower() == descrServicio.ToLower());
+            }
+            catch (Exception){throw;}    
         }
 
         /// <summary>
@@ -95,7 +115,11 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>Un listado. Sino, un listado vacío.</returns>
         public async Task<List<Servicios>> GetActiveServices()
         {
-            return await _context.Servicio.Where(x => x.Estado == true && x.DeletedAt == null).ToListAsync();
+            try
+            {
+                return await _context.Servicio.Where(x => x.Estado == true && x.DeletedAt == null).ToListAsync();
+            }
+            catch (Exception) {throw;}
         }
     }
 }

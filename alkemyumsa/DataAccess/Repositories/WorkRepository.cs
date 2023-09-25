@@ -71,21 +71,24 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si se actualizó correctamente. Sino, false.</returns>
         public async override Task<bool> Update(Trabajos updateTrabajo)
         {
-            var trabajo = await _context.Trabajo.SingleOrDefaultAsync(x => x.CodTrabajo == updateTrabajo.CodTrabajo);
-            if (trabajo == null || trabajo.DeletedAt != null) { return false; }
+            try
+            {
+                var trabajo = await _context.Trabajo.SingleOrDefaultAsync(x => x.CodTrabajo == updateTrabajo.CodTrabajo);
+                if (trabajo == null || trabajo.DeletedAt != null) { return false; }
 
-            trabajo.Fecha = updateTrabajo.Fecha; // yy-mm-dd
-            trabajo.CantHoras = updateTrabajo.CantHoras;
-            trabajo.ValorHora = updateTrabajo.ValorHora;
-            trabajo.Costo = updateTrabajo.CantHoras * updateTrabajo.ValorHora;
-            trabajo.CodProyecto = updateTrabajo.CodProyecto;
-            trabajo.CodServicio = updateTrabajo.CodServicio;
+                trabajo.Fecha = updateTrabajo.Fecha; // yy-mm-dd
+                trabajo.CantHoras = updateTrabajo.CantHoras;
+                trabajo.ValorHora = updateTrabajo.ValorHora;
+                trabajo.Costo = updateTrabajo.CantHoras * updateTrabajo.ValorHora;
+                trabajo.CodProyecto = updateTrabajo.CodProyecto;
+                trabajo.CodServicio = updateTrabajo.CodServicio;
 
-            _context.Trabajo.Update(trabajo);
+                _context.Trabajo.Update(trabajo);
 
-            return true;
+                return true;
+            }
+            catch (Exception ex) { throw; }
         }
-
         /// <summary>
         /// Borrado lógico de trabajo.
         /// </summary>
@@ -93,15 +96,19 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si el trabajo fue encontrado. Sino, false.</returns>
         public async override Task<bool> Delete(int id)
         {
-            var trabajo = await _context.Trabajo.Where(x => x.CodTrabajo == id).SingleOrDefaultAsync();
-            if (trabajo != null && trabajo.DeletedAt == null)
+            try
             {
-                //_context.trabajo.Remove(user); // borrado físico
-                trabajo.DeletedAt = DateTime.UtcNow; // borrado lógico
+                var trabajo = await _context.Trabajo.Where(x => x.CodTrabajo == id).SingleOrDefaultAsync();
+                if (trabajo != null && trabajo.DeletedAt == null)
+                {
+                    //_context.trabajo.Remove(user); // borrado físico
+                    trabajo.DeletedAt = DateTime.UtcNow; // borrado lógico
 
-                return true;
-            }
-            return false;
-        }
+                    return true;
+                }
+                return false;
+            }catch (Exception ex) { throw; }
+
+        }       
     }
 }

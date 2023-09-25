@@ -27,7 +27,11 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>Devuelve el usuario autenticado. Sino, null.</returns>
         public async Task<Usuarios?> AuthenticateCredentials(AuthenticateDto dto)
         {
-            return await _context.Usuario.SingleOrDefaultAsync(x => x.Email == dto.Email && x.Contrasena == PasswordHashHelper.EncryptPassword(dto.Contrasena, dto.Email));
+            try
+            {
+                return await _context.Usuario.SingleOrDefaultAsync(x => x.Email == dto.Email && x.Contrasena == PasswordHashHelper.EncryptPassword(dto.Contrasena, dto.Email));
+            }
+            catch (Exception ex) { throw; }
         }
 
         /// <summary>
@@ -36,8 +40,12 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>Una lista de los usuarios activos.</returns>
         public async override Task<List<Usuarios>> GetAll()
         {
-            var users = await _context.Usuario.ToListAsync();
-            return users.Where(x => x.DeletedAt == null).ToList();
+            try
+            {
+                var users = await _context.Usuario.ToListAsync();
+
+                return users.Where(x => x.DeletedAt == null).ToList();
+            }catch (Exception ex) { throw; }
         }
         
         /// <summary>
@@ -47,10 +55,13 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>El usuario. Sino, devuelve null.</returns>
         public async override Task<Usuarios?> Get(int id)
         {
-            var user = await _context.Usuario.SingleOrDefaultAsync(x => x.Id == id); 
-            if (user == null || user.DeletedAt != null) { return null; }
+            try
+            {
+                var user = await _context.Usuario.SingleOrDefaultAsync(x => x.Id == id);
+                if (user == null || user.DeletedAt != null) { return null; }
 
-            return user;
+                return user;
+            }catch (Exception ex) { throw; }
         }
         /// <summary>
         /// Actualiza la información de un usuario.
@@ -59,16 +70,19 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si se actualizó correctamente. Sino, false.</returns>
         public async override Task<bool> Update(Usuarios updateUser)
         {
-            var user = await _context.Usuario.SingleOrDefaultAsync(x => x.Id == updateUser.Id); 
-            if (user == null || user.DeletedAt != null) { return false; }
-            user.Nombre = updateUser.Nombre;
-            user.Dni = updateUser.Dni;
-            user.Email = updateUser.Email;
-            user.Rol = updateUser.Rol;
-            user.Contrasena = updateUser.Contrasena;
-            _context.Usuario.Update(user);
+            try
+            {
+                var user = await _context.Usuario.SingleOrDefaultAsync(x => x.Id == updateUser.Id);
+                if (user == null || user.DeletedAt != null) { return false; }
+                user.Nombre = updateUser.Nombre;
+                user.Dni = updateUser.Dni;
+                user.Email = updateUser.Email;
+                user.Rol = updateUser.Rol;
+                user.Contrasena = updateUser.Contrasena;
+                _context.Usuario.Update(user);
 
-            return true;
+                return true;
+            }catch (Exception ex) { throw; }
         }
 
         /// <summary>
@@ -78,14 +92,18 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si el usuario fue encontrado. Sino, false.</returns>
         public async override Task<bool> Delete(int id)
         {
-            var user =  await _context.Usuario.Where(x => x.Id == id).SingleOrDefaultAsync();
-            if (user != null && user.DeletedAt == null) {
-                //_context.Usuario.Remove(user); // borrado físico
-                user.DeletedAt = DateTime.UtcNow; // borrado lógico
+            try
+            {
+                var user = await _context.Usuario.Where(x => x.Id == id).SingleOrDefaultAsync();
+                if (user != null && user.DeletedAt == null)
+                {
+                    //_context.Usuario.Remove(user); // borrado físico
+                    user.DeletedAt = DateTime.UtcNow; // borrado lógico
 
-                return true;
-            }
-            return false;
+                    return true;
+                }
+                return false;
+            }catch (Exception ex) { throw; }
         }
 
         /// <summary>
@@ -95,7 +113,10 @@ namespace alkemyumsa.DataAccess.Repositories
         /// <returns>True si el mail ya existe.Sino, false.</returns>
         public async Task<bool> Check(string email)
         {
-            return await _context.Usuario.AnyAsync(x => x.Email == email);
+            try
+            {
+                return await _context.Usuario.AnyAsync(x => x.Email == email);
+            }catch (Exception){throw;}    
         }
     }
 }

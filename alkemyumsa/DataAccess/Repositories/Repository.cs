@@ -53,10 +53,7 @@ namespace alkemyumsa.DataAccess.Repositories
                 await _context.Set<T>().AddAsync(entity);
                 return true;
             }
-            catch (Exception)
-            {
-                return false;
-            }
+            catch (Exception) { return false; }   
         }
 
         /// <summary>
