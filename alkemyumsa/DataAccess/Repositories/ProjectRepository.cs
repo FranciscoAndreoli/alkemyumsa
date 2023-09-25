@@ -8,14 +8,14 @@ using Microsoft.EntityFrameworkCore;
 namespace alkemyumsa.DataAccess.Repositories
 {
     /// <summary>
-    /// Provides data access methods specific to  operations.
+    /// Provee métodos para el acceso a datos de proyectos.
     /// </summary>
     public class ProjectRepository : Repository<Proyectos>, IProjectRepository
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProjectRepository"/> class.
+        /// Inicializa una nueva instancia de  <see cref="ProjectRepository"/>.
         /// </summary>
-        /// <param name="context">The application database context.</param>
+        /// <param name="context">Context actúa como una sesión entre la aplicación y la base de datos.</param>
         public ProjectRepository(ApplicationDbContext context) : base(context)
         {
 
@@ -23,9 +23,9 @@ namespace alkemyumsa.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Retrieves all non-deleted users.
+        /// Devuelve los proyectos no eliminados.
         /// </summary>
-        /// <returns>A list of all active users.</returns>
+        /// <returns>Una lista de los proyectos activos.</returns>
         public async override Task<List<Proyectos>> GetAll()
         {
             var proyectos = await _context.Proyecto.ToListAsync();
@@ -33,10 +33,10 @@ namespace alkemyumsa.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Retrieves a user by their ID.
+        /// Devuelve un proyecto según su ID.
         /// </summary>
-        /// <param name="id">The ID of the user to retrieve.</param>
-        /// <returns>The user if found and not deleted; otherwise, null.</returns>
+        /// <param name="id">El ID del proyecto a devolver.</param>
+        /// <returns>El proyecto. Sino, devuelve null.</returns>
         public async override Task<Proyectos?> Get(int id)
         {
             var proyectos = await _context.Proyecto.SingleOrDefaultAsync(x => x.CodProyecto == id); 
@@ -44,32 +44,43 @@ namespace alkemyumsa.DataAccess.Repositories
 
             return proyectos;
         }
+
         /// <summary>
-        /// Updates the details of an existing user.
+        /// Devuelve listado de proyectos, filtrados por su estado: Pendiente, Confirmado, Terminado.
         /// </summary>
-        /// <param name="updateProyecto">The user object containing updated details.</param>
-        /// <returns>True if the update was successful; otherwise, false.</returns>
+        /// <param name="estado">El estado del proyecto a devolver.</param>
+        /// <returns>El proyecto. Sino, devuelve null.</returns>
+        public async Task<List<Proyectos>> GetProjects(string estado)
+        {
+            var proyectos = await _context.Proyecto.Where
+                                                    (x => x.Estado.ToLower() == estado.ToLower() && x.DeletedAt == null)
+                                                    .ToListAsync();
+            return proyectos;
+        }
+
+
+        /// <summary>
+        /// Actualiza la información de un proyecto.
+        /// </summary>
+        /// <param name="updateProyecto">El DTO de proyecto.</param>
+        /// <returns>True si se actualizó correctamente. Sino, false.</returns>
         public async override Task<bool> Update(Proyectos updateProyecto)
         {
-            var proyecto = await _context.Proyecto.SingleOrDefaultAsync(x => x.CodProyecto == updateProyecto.CodProyecto); //Trae el usuario que coincida con el ID.
-
+            var proyecto = await _context.Proyecto.SingleOrDefaultAsync(x => x.CodProyecto == updateProyecto.CodProyecto); 
             if (proyecto == null || proyecto.DeletedAt != null) { return false; }
-
             proyecto.Nombre = updateProyecto.Nombre;
             proyecto.Direccion = updateProyecto.Direccion;
             proyecto.Estado = updateProyecto.Estado;
-        
-
             _context.Proyecto.Update(proyecto);
 
             return true;
         }
 
         /// <summary>
-        /// Marks a user as deleted without physically removing them from the database.
+        /// Borrado lógico de proyecto.
         /// </summary>
-        /// <param name="id">The ID of the user to delete.</param>
-        /// <returns>True if the user was found and marked as deleted; otherwise, false.</returns>
+        /// <param name="id">ID del proyecto a eliminar.</param>
+        /// <returns>True si el proyecto fue encontrado. Sino, false.</returns>
         public async override Task<bool> Delete(int id)
         {
             var proyecto = await _context.Proyecto.Where(x => x.CodProyecto == id).SingleOrDefaultAsync();
@@ -84,13 +95,13 @@ namespace alkemyumsa.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Checks if a user with the provided email already exists.
+        /// Chequea si el Proyecto ingresado ya existe.
         /// </summary>
-        /// <param name="email">The email address to check.</param>
-        /// <returns>True if a user with the email exists; otherwise, false.</returns>
-        public async Task<bool> Check(string nombreProyecto)
+        /// <param name="nombreProyecto">El Proyecto a chequear.</param>
+        /// <returns>True si el Proyecto ya existe. Sino, false.</returns>
+        public async override Task<bool> Check(string nombreProyecto)
         {
-            return await _context.Proyecto.AnyAsync(x => x.Nombre == nombreProyecto);
+            return await _context.Proyecto.AnyAsync(x => x.Nombre.ToLower() == nombreProyecto.ToLower());
         }
     }
 }

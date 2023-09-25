@@ -8,34 +8,32 @@ using Microsoft.EntityFrameworkCore;
 namespace alkemyumsa.DataAccess.Repositories
 {
     /// <summary>
-    /// Provides data access methods specific to user operations.
+    /// Provee métodos para el acceso a datos de usuarios.
     /// </summary>
     public class UserRepository : Repository<Usuarios>, IUserRepository
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="UserRepository"/> class.
+        /// Inicializa una nueva instancia de  <see cref="UserRepository"/>.
         /// </summary>
-        /// <param name="context">The application database context.</param>
+        /// <param name="context">Context actúa como una sesión entre la aplicación y la base de datos.</param>
         public UserRepository(ApplicationDbContext context) : base(context) {
-
 
         }
 
         /// <summary>
-        /// Authenticates a user based on provided credentials.
+        /// Autentica un usuario en base a las credenciales.
         /// </summary>
-        /// <param name="dto">The data transfer object containing user credentials for authentication.</param>
-        /// <returns>The authenticated user if credentials are correct; otherwise, null.</returns>
+        /// <param name="dto">El DTO que contiene información de las credenciales de usuario.</param>
+        /// <returns>Devuelve el usuario autenticado. Sino, null.</returns>
         public async Task<Usuarios?> AuthenticateCredentials(AuthenticateDto dto)
         {
             return await _context.Usuario.SingleOrDefaultAsync(x => x.Email == dto.Email && x.Contrasena == PasswordHashHelper.EncryptPassword(dto.Contrasena, dto.Email));
-
         }
 
         /// <summary>
-        /// Retrieves all non-deleted users.
+        /// Devuelve los usuarios no eliminados.
         /// </summary>
-        /// <returns>A list of all active users.</returns>
+        /// <returns>Una lista de los usuarios activos.</returns>
         public async override Task<List<Usuarios>> GetAll()
         {
             var users = await _context.Usuario.ToListAsync();
@@ -43,44 +41,41 @@ namespace alkemyumsa.DataAccess.Repositories
         }
         
         /// <summary>
-        /// Retrieves a user by their ID.
+        /// Devuelve un usuario según su ID.
         /// </summary>
-        /// <param name="id">The ID of the user to retrieve.</param>
-        /// <returns>The user if found and not deleted; otherwise, null.</returns>
+        /// <param name="id">El ID del usuario a devolver.</param>
+        /// <returns>El usuario. Sino, devuelve null.</returns>
         public async override Task<Usuarios?> Get(int id)
         {
-            var user = await _context.Usuario.SingleOrDefaultAsync(x => x.Id == id); //Trae el usuario que coincida con el ID.
+            var user = await _context.Usuario.SingleOrDefaultAsync(x => x.Id == id); 
             if (user == null || user.DeletedAt != null) { return null; }
 
             return user;
         }
         /// <summary>
-        /// Updates the details of an existing user.
+        /// Actualiza la información de un usuario.
         /// </summary>
-        /// <param name="updateUser">The user object containing updated details.</param>
-        /// <returns>True if the update was successful; otherwise, false.</returns>
+        /// <param name="updateUser">El DTO de usuario.</param>
+        /// <returns>True si se actualizó correctamente. Sino, false.</returns>
         public async override Task<bool> Update(Usuarios updateUser)
         {
-            var user = await _context.Usuario.SingleOrDefaultAsync(x => x.Id == updateUser.Id); //Trae el usuario que coincida con el ID.
-
+            var user = await _context.Usuario.SingleOrDefaultAsync(x => x.Id == updateUser.Id); 
             if (user == null || user.DeletedAt != null) { return false; }
-
             user.Nombre = updateUser.Nombre;
             user.Dni = updateUser.Dni;
             user.Email = updateUser.Email;
             user.Rol = updateUser.Rol;
             user.Contrasena = updateUser.Contrasena;
-
             _context.Usuario.Update(user);
 
             return true;
         }
 
         /// <summary>
-        /// Marks a user as deleted without physically removing them from the database.
+        /// Borrado lógico de usuario.
         /// </summary>
-        /// <param name="id">The ID of the user to delete.</param>
-        /// <returns>True if the user was found and marked as deleted; otherwise, false.</returns>
+        /// <param name="id">ID del usuario a eliminar.</param>
+        /// <returns>True si el usuario fue encontrado. Sino, false.</returns>
         public async override Task<bool> Delete(int id)
         {
             var user =  await _context.Usuario.Where(x => x.Id == id).SingleOrDefaultAsync();
@@ -94,10 +89,10 @@ namespace alkemyumsa.DataAccess.Repositories
         }
 
         /// <summary>
-        /// Checks if a user with the provided email already exists.
+        /// Chequea si el mail ingresado ya existe.
         /// </summary>
-        /// <param name="email">The email address to check.</param>
-        /// <returns>True if a user with the email exists; otherwise, false.</returns>
+        /// <param name="email">El mail a chequear.</param>
+        /// <returns>True si el mail ya existe.Sino, false.</returns>
         public async Task<bool> Check(string email)
         {
             return await _context.Usuario.AnyAsync(x => x.Email == email);

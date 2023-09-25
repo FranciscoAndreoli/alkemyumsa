@@ -1,10 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using alkemyumsa.DTOs;
 
 namespace alkemyumsa.Entities
 {
     public class Servicios
     {
+        public Servicios(ServiciosDto dtoServicio)
+        {
+            Descr = dtoServicio.Descr;
+            Estado = dtoServicio.Estado;
+            ValorHora = dtoServicio.ValorHora;
+        }
+        public Servicios(ServiciosDto dtoServicio, int id)
+        {
+            CodServicio = id;
+            Descr = dtoServicio.Descr;
+            Estado = dtoServicio.Estado;
+            ValorHora = dtoServicio.ValorHora;
+        }
         public Servicios()
         {
 

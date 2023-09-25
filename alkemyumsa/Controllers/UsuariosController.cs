@@ -10,51 +10,47 @@ using alkemyumsa.Infraestructure;
 namespace alkemyumsa.Controllers
 {
     /// <summary>
-    /// Provides endpoints for CRUD operations on users.
+    /// Provee ENDPOINTS para realizar operaciones CRUD de usuarios
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] //  Todos los endpoint requieren autenticación el JWT.
+    [Authorize] 
     //[AllowAnonymous]
     public class UsuariosController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         /// <summary>
-        /// Initializes a new instance of the <see cref="UsuariosController"/> class.
+        /// Inicializa nueva instancia de  <see cref="UsuariosController"/>.
         /// </summary>
-        /// <param name="unitOfWork">Provides mechanisms to interact with the data source.</param>
+        /// <param name="unitOfWork">Provee mecanismos para interactuar con los datos de la base.</param>
         public UsuariosController(IUnitOfWork unitOfWork) 
         {
             _unitOfWork = unitOfWork;
-
         }
 
 
         /// <summary>
-        /// Retrieves all users.
+        /// Devuelve todos los usuarios.
         /// </summary>
-        /// <returns>A list of users.</returns>
+        /// <returns>Un listado de usuarios.</returns>
         [HttpGet]
         public async Task<IActionResult> GetAll() 
         {
             var users = await _unitOfWork.UserRepository.GetAll();
             int pageToShow = 1;
-
             if(Request.Query.ContainsKey("page")) { int.TryParse(Request.Query["page"], out pageToShow);  }
-
             var url = new Uri($"{Request.Scheme}://{Request.Host}{Request.Path}").ToString();
             var userDtos = users.Select(user => UserMapper.MapToDto(user)).ToList();
             var paginateUsers = PaginateHelper.Paginate(userDtos, pageToShow, url);
-
             
             return ResponseFactory.CreateSuccessResponse(200, userDtos);
         }
 
         /// <summary>
-        /// Retrieves a user by their ID.
+        ///Devuelve un usuario por ID.
         /// </summary>
-        /// <param name="id">The ID of the user to retrieve.</param>
-        /// <returns>The user if found; otherwise, a 404 error.</returns>
+        /// <param name="id">El ID del usuario a devolver.</param>
+        /// <returns>El usuario si se encuentra. Sino, 404</returns>
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromRoute]int id)
         {
@@ -63,66 +59,60 @@ namespace alkemyumsa.Controllers
             {
                 return ResponseFactory.CreateErrorResponse(404, "User not found or deleted.");
             }
-
             var userDto = UserMapper.MapToDto(user);
+
             return ResponseFactory.CreateSuccessResponse(200, userDto);
         }
 
         /// <summary>
-        /// Registers a new user.
+        /// Registra un nuevo usuario.
         /// </summary>
-        /// <param name="dto">The data transfer object containing user registration details.</param>
-        /// <returns>A success message upon successful registration; otherwise, an error message.</returns>
+        /// <param name="dto">El DTO que contiene detalles del registro</param>
+        /// <returns>Un mensaje de éxito si se registró correctamente. Sino, error.</returns>
         [Authorize(Policy = "Administrador")]
         [HttpPost]
         [Route("Register")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
-           
             if (await _unitOfWork.UserRepository.Check(dto.Email))
             {
                 return ResponseFactory.CreateErrorResponse(409, $"This user already exists: {dto.Email}");
             }
             var user = new Usuarios(dto);
             await _unitOfWork.UserRepository.Insert(user);
-            await _unitOfWork.Complete(); // ejecuta la query, registra los cambios. Los guarda.
+            await _unitOfWork.Complete();
 
             return ResponseFactory.CreateSuccessResponse(200, "User successfully registered.");
         }
 
         /// <summary>
-        /// Updates a user's details.
+        /// Actualiza los datos del usuario.
         /// </summary>
-        /// <param name="id">The ID of the user to update.</param>
-        /// <param name="dto">The data transfer object containing the updated user details.</param>
-        /// <returns>A success message upon successful update; otherwise, an error message.</returns>
+        /// <param name="id">El ID del usuario a actualizar.</param>
+        /// <param name="dto">El DTO que contiene información del usuario a actualizar.</param>
+        /// <returns>Un mensaje de éxito si se actualizó. Sino, error.</returns>
         [Authorize(Policy = "Administrador")]
         [HttpPut ("{id}")]
         public async Task<IActionResult> Update( [FromRoute] int id, RegisterDto dto)
         {
-            
-
             var result = await _unitOfWork.UserRepository.Update(new Usuarios(dto, id));
             if (result == false) { return ResponseFactory.CreateErrorResponse(404, "User not found or deleted."); }
-
-
             await _unitOfWork.Complete();
 
             return ResponseFactory.CreateSuccessResponse(200, "Usuario updated succesfully.");
         }
 
         /// <summary>
-        /// Deletes a user.
+        /// Borrar un usuario.
         /// </summary>
-        /// <param name="id">The ID of the user to delete.</param>
-        /// <returns>A success message upon successful deletion; otherwise, an error message.</returns>
+        /// <param name="id">El ID del usuario a borrar.</param>
+        /// <returns>Un mensaje de éxito si se borró. Sino, error.</returns>
         [Authorize(Policy = "Administrador")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var result = await _unitOfWork.UserRepository.Delete(id);
             if (result == false) { return ResponseFactory.CreateErrorResponse(404, "User not found."); }
-
             await _unitOfWork.Complete();
 
             return ResponseFactory.CreateSuccessResponse(200, "Usuario deleted succesfully");

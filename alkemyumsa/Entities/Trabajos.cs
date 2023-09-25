@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using alkemyumsa.DTOs;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection.Metadata.Ecma335;
@@ -7,6 +8,26 @@ namespace alkemyumsa.Entities
 {
     public class Trabajos
     {
+        public Trabajos(TrabajosDto dto)
+        {
+            Fecha = dto.Fecha;
+            CantHoras = dto.CantHoras;
+            ValorHora = dto.ValorHora;
+            Costo = dto.CantHoras * dto.ValorHora;
+            CodProyecto = dto.CodProyecto;
+            CodServicio = dto.CodServicio;
+        }
+
+        public Trabajos(TrabajosDto dto, int id )
+        {
+            CodTrabajo = id;
+            Fecha = dto.Fecha;
+            CantHoras = dto.CantHoras;
+            ValorHora = dto.ValorHora;
+            Costo = dto.CantHoras * dto.ValorHora;
+            CodProyecto = dto.CodProyecto;
+            CodServicio = dto.CodServicio;
+        }
         public Trabajos()
         {
 
