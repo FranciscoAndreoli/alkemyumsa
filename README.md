@@ -1,4 +1,4 @@
-![Snipaste_2023-09-25_10-22-11](https://github.com/FranciscoAndreoli/alkemyumsa/assets/72111673/dd305b2b-0c61-4340-9847-823a75f38e3d)
+![image](https://github.com/FranciscoAndreoli/alkemyumsa/assets/72111673/ed6ae537-4299-4745-9ed5-2685d5e68748)
 
 # Sistema de Control de Horas de Servicio
 Bienvenido al repositorio del Sistema de Control de Horas de Servicio diseñado para TechOil, líder en el sector Oil & Gas en Latinoamérica. A continuación, encontrarás una descripción detallada de la arquitectura y especificaciones técnicas del proyecto.
