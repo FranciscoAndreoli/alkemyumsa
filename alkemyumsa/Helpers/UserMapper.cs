@@ -10,9 +10,8 @@ namespace alkemyumsa.Helpers
             return new UsuarioResponseDto
             {
                 Nombre = user.Nombre,
-                Apellido = user.Apellido,
+                Dni = user.Dni,
                 Email = user.Email,
-                Contrasena = user.Contrasena,
                 Rol = user.Rol
             };
         }

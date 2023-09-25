@@ -14,7 +14,7 @@ namespace alkemyumsa.Controllers
 {
 
     /// <summary>
-    /// Controller responsible for handling user login operations.
+    /// Controlador responsable de las operaciones del login.
     /// </summary>
     [ApiController]
     [Route("api/[Controller]")]
@@ -23,10 +23,10 @@ namespace alkemyumsa.Controllers
         private TokenJwtHelper _tokenJwtHelper;
         private readonly IUnitOfWork _unitOfWork;
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoginController"/> class.
+        /// Inicializa una nueva instancia de la clase <see cref="LoginController"/>.
         /// </summary>
-        /// <param name="unitOfWork">Provides mechanisms to interact with the data source, such as database operations.</param>
-        /// <param name="configuration">Represents a set of key/value application configuration properties.</param>
+        /// <param name="unitOfWork">Provee mecanismos para interactuar con la base.</param>
+        /// <param name="configuration">Representa un conjunto de configuraciones de la aplicación.</param>
         public LoginController(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
@@ -34,12 +34,12 @@ namespace alkemyumsa.Controllers
         }
 
         /// <summary>
-        /// Authenticates the user based on the provided credentials.
+        /// Autentica el usuario.
         /// </summary>
-        /// <param name="loginDto">The data transfer object containing user credentials for authentication.</param>
+        /// <param name="loginDto">El DTO que contiene información para la autenticación.</param>
         /// <returns>
-        /// Returns a user with a generated token upon successful authentication. 
-        /// If authentication fails, it returns a 401 error response with an appropriate error message.
+        /// Devuelve el usuario con un token generado. 
+        /// Si falla, devuelve un error 401.
         /// </returns>
         [HttpPost]
         //[AllowAnonymous] 
@@ -48,13 +48,13 @@ namespace alkemyumsa.Controllers
             try
             {
                 var userCredentials = await _unitOfWork.UserRepository.AuthenticateCredentials(loginDto);
-                if (userCredentials == null) { return ResponseFactory.CreateErrorResponse(401, "Wrong credentials!"); } 
+                if (userCredentials == null) { return ResponseFactory.CreateErrorResponse(401, "Credenciales incorrectas!"); } 
 
                 var token = _tokenJwtHelper.GenerateToken(userCredentials);
                 var user = new UsuarioLoginDto()
                 {
                     Nombre = userCredentials.Nombre,
-                    Apellido = userCredentials.Apellido,
+                    Dni = userCredentials.Dni,
                     Email = userCredentials.Email,
                     Token = token
 
@@ -63,7 +63,7 @@ namespace alkemyumsa.Controllers
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateErrorResponse(401, $"System error: {ex.Message}");
+                return ResponseFactory.CreateErrorResponse(401, $"Error del sistema: {ex.Message}");
             }
         }
     }

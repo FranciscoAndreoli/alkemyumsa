@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using alkemyumsa.DataAccess;
 
@@ -11,9 +12,10 @@ using alkemyumsa.DataAccess;
 namespace alkemyumsa.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230924005824_addedEntitiesAndSeeders")]
+    partial class addedEntitiesAndSeeders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -151,7 +153,7 @@ namespace alkemyumsa.Migrations
                     b.Property<int>("CodTrabajo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("cod_trabajo");
+                        .HasColumnName("cod_trabjo");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CodTrabajo"), 1L, 1);
 
